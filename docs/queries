@@ -1,0 +1,27 @@
+select
+SISUserUID,
+Email,
+SISID,
+'EXEC [SIS].[dbo].[SP_SyncAccountDetails]
+N''' + Email + ''',
+N'''+ isnull(IDNumber,'') + ''' ,
+N'''+ SISUserAliasEmail+ ''',
+N'''+ SISUserUID+ ''' ,
+N'''+ SISID+ ''' ,
+N'''+ isnull(SISUserNameEn,'') + ''' ,
+N'''+ SISUserNameAr+ ''',
+N'''+ SISUserRole+''''
+from
+(
+select ph.Value Email, p.IDNumber,
+'SST11Pers' + convert(varchar(max), p.person_Id) + '@ese.gov.ae' SISUserAliasEmail,
+'SST-1-1-Pers-' + convert(varchar(max), p.person_Id) SISUserUID,
+p.FirstName + ' ' + p.FamilyName SISUserNameAr,
+p.EnglishFirstName + ' ' + p.EnglishFamilyName SISUserNameEn,
+'["ADMIN"]' SISUserRole,
+p.ExternalID SISID
+from COMM_Phone ph
+join COMM_Person p on p.PhoneList_Id = ph.PhoneList_Id and contactType in (10)
+join SYS_User u on p.User_Id = u.User_Id
+where Ph.Value in ('amed-Y.Ahmed@ese.gov.ae')
+) account
