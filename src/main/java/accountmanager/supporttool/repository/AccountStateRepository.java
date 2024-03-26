@@ -1,5 +1,6 @@
 package accountmanager.supporttool.repository;
 
+import accountmanager.supporttool.dto.AccountStateDTO;
 import accountmanager.supporttool.model.amstate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;

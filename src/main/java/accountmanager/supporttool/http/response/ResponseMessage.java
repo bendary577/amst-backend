@@ -8,10 +8,6 @@ public class ResponseMessage implements Serializable {
     protected Object data = "";
 
     public ResponseMessage(){}
-    public ResponseMessage(String message, String data){
-        this.data = data;
-        this.message = message;
-    }
 
     public String getMessage() {
         return message;

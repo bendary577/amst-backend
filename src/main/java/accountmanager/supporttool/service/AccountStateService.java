@@ -1,11 +1,11 @@
 package accountmanager.supporttool.service;
 
 import accountmanager.supporttool.annotation.SwitchDataSource;
-import accountmanager.supporttool.enumeration.SISUserRole;
+import accountmanager.supporttool.enumeration.UserRole;
 import accountmanager.supporttool.model.amstate.AccountState;
-import accountmanager.supporttool.model.amstate.AccountStateDTO;
+import accountmanager.supporttool.dto.AccountStateDTO;
 import accountmanager.supporttool.repository.AccountStateRepository;
-import accountmanager.supporttool.util.OfficialEmailUtility;
+import accountmanager.supporttool.util.OfficialEmailUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.LinkedList;
@@ -54,14 +54,14 @@ public class AccountStateService {
 
             //user role
             Integer role = sisAccountStates.get(0).getStaff_id() == null ? 1: 2;
-            accountStateDTO.setRole(SISUserRole.valueOfRole(role));
+            accountStateDTO.setRole(UserRole.valueOfRole(role));
 
             if(role == 1){ //Student
                 //does gender and official email match
                 List<String> officialEmails = new LinkedList<>();
                 officialEmails.add(sisAccountStates.get(0).getValue());
                 officialEmails.add(sisAccountStates.get(0).getAccountID());
-                accountStateDTO.setOfficialEmailMatchGender(OfficialEmailUtility.doOfficialEmailsMatchWithGender(gender, officialEmails));
+                accountStateDTO.setOfficialEmailMatchGender(OfficialEmailUtil.doOfficialEmailsMatchWithGender(gender, officialEmails));
             }else{ //no need to check gender email format
                 accountStateDTO.setOfficialEmailMatchGender(true);
             }

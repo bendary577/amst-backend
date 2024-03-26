@@ -1,7 +1,7 @@
 package accountmanager.supporttool.service;
 
 import accountmanager.supporttool.annotation.SwitchDataSource;
-import accountmanager.supporttool.model.amstate.AccountStateDashboard;
+import accountmanager.supporttool.dto.AccountStateDashboardDTO;
 import accountmanager.supporttool.repository.AccountStateDashboardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,12 +17,12 @@ public class AccountStateDashboardService {
     }
 
     @SwitchDataSource(value = "ZLMESE")
-    public AccountStateDashboard getSISDashboardData() {
+    public AccountStateDashboardDTO getSISDashboardData() {
         int getNumberOfStudentsWithoutUserRecord = this.accountStateDashboardRepository.getNumberOfStudentsWithoutUserRecord();
         int getNumberOfStudentsWithDisabledUsers = this.accountStateDashboardRepository.getNumberOfStudentsWithDisabledUsers();
         int getNumberOfStudentsWithoutProfile = this.accountStateDashboardRepository.getNumberOfStudentsWithoutProfile();
         int getNumberOfStudentsWithoutState = this.accountStateDashboardRepository.getNumberOfStudentsWithoutState();
-        AccountStateDashboard accountStateDashboard = new AccountStateDashboard();
+        AccountStateDashboardDTO accountStateDashboard = new AccountStateDashboardDTO();
         accountStateDashboard.setStudentsWithNoUserRecord(getNumberOfStudentsWithoutUserRecord);
         accountStateDashboard.setStudentsWithDisabledUsers(getNumberOfStudentsWithDisabledUsers);
         accountStateDashboard.setStudentsWithNoProfileRecord(getNumberOfStudentsWithoutProfile);

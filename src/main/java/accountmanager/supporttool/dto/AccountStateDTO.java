@@ -1,7 +1,7 @@
-package accountmanager.supporttool.model.amstate;
+package accountmanager.supporttool.dto;
 
 
-import accountmanager.supporttool.enumeration.SISUserRole;
+import accountmanager.supporttool.enumeration.UserRole;
 import java.util.List;
 
 public class AccountStateDTO {
@@ -16,7 +16,7 @@ public class AccountStateDTO {
 
     private String staffNumber;
     private String studentNumber;
-    private SISUserRole role;
+    private UserRole role;
     private List<String> troubleshootingRCA;
     private boolean hasUserRecord;
     private boolean hasOfficialEmailsMatch;
@@ -116,11 +116,11 @@ public class AccountStateDTO {
         isOfficialEmailMatchGender = officialEmailMatchGender;
     }
 
-    public SISUserRole getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(SISUserRole role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 

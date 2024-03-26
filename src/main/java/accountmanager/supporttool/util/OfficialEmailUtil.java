@@ -2,7 +2,7 @@ package accountmanager.supporttool.util;
 
 import java.util.List;
 
-public class OfficialEmailUtility {
+public class OfficialEmailUtil {
 
     public static boolean doOfficialEmailsMatchWithGender(int gender, List<String> officialEmails){
         boolean doOfficialEmailsMatchWithGender = true;

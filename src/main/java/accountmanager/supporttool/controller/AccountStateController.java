@@ -2,7 +2,7 @@ package accountmanager.supporttool.controller;
 
 import accountmanager.supporttool.http.response.ResponseMessage;
 import accountmanager.supporttool.model.amstate.AccountState;
-import accountmanager.supporttool.model.amstate.AccountStateDTO;
+import accountmanager.supporttool.dto.AccountStateDTO;
 import accountmanager.supporttool.service.AccountStateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

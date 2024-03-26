@@ -1,12 +1,12 @@
-package accountmanager.supporttool.model.amstate;
+package accountmanager.supporttool.dto;
 
-public class AccountStateDashboard {
+public class AccountStateDashboardDTO {
 
     private int studentsWithNoUserRecord;
     private int studentsWithDisabledUsers;
     private int studentsWithNoProfileRecord;
     private int studentsWithNoStateRecord;
-    public AccountStateDashboard(){}
+    public AccountStateDashboardDTO(){}
 
     public int getStudentsWithNoUserRecord() {
         return studentsWithNoUserRecord;

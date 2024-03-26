@@ -1,7 +1,7 @@
 package accountmanager.supporttool.controller;
 
 import accountmanager.supporttool.http.response.ResponseMessage;
-import accountmanager.supporttool.model.amstate.AccountStateDashboard;
+import accountmanager.supporttool.dto.AccountStateDashboardDTO;
 import accountmanager.supporttool.service.AccountStateDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ public class AccountStateDashboardController {
 
     @GetMapping("/")
     public ResponseEntity<ResponseMessage> getDashboardInfo() {
-        AccountStateDashboard accountStateDashboard = this.accountStateDashboardService.getSISDashboardData();
+        AccountStateDashboardDTO accountStateDashboard = this.accountStateDashboardService.getSISDashboardData();
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setMessage("account state dashboard returned successfully");
         responseMessage.setData(accountStateDashboard);

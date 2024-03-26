@@ -9,14 +9,19 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
+
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.dynamicdatasource.demo",entityManagerFactoryRef = "entityManager")
+@EnableJpaRepositories(basePackages = "accountmanager.supporttool.repository",
+        entityManagerFactoryRef = "entityManager",
+        transactionManagerRef = "transactionManager")
 public class DynamicDatabaseRouter {
 
     public static final String PROPERTY_PREFIX = "spring.datasource.";
@@ -33,9 +38,14 @@ public class DynamicDatabaseRouter {
     }
 
     @Bean(name = "entityManager")
-    @Scope("prototype")
+//    @Scope("prototype")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(EntityManagerFactoryBuilder builder) {
-        return builder.dataSource(dataSource()).packages("com.dynamicdatasource").build();
+        return builder.dataSource(dataSource()).packages("accountmanager.supporttool.model.app").build();
+    }
+
+    @Bean(name = "transactionManager")
+    public PlatformTransactionManager transactionManager(EntityManagerFactoryBuilder builder) {
+        return new JpaTransactionManager(entityManagerFactoryBean(builder).getObject());
     }
 
     private Map<Object,Object> getTargetDataSources() {
