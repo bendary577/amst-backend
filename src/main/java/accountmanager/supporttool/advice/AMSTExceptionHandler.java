@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class AMSTExceptionHandler {
 
+    //TODO : CHECK THE BEST PRACTICES FOR USING ADVICE
 //    @ExceptionHandler(HttpMessageNotReadableException.class)
 //    public ResponseEntity<ResponseMessage> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
 //        String errorMessage = "the role requested is not found .. please choose a suitable user role";
