@@ -17,4 +17,10 @@ public class OfficialEmailUtil {
         }
         return doOfficialEmailsMatchWithGender;
     }
+
+    public static boolean isValidOfficialEmail(String officialEmail){
+        officialEmail = officialEmail.toLowerCase();
+        String regex = "[A-Za-z0-9._%+-]+@(ese\\.gov\\.ae|kbza\\.sch\\.ae)$";
+        return officialEmail.matches(regex);
+    }
 }

@@ -1,5 +1,6 @@
 package accountmanager.supporttool.repository;
 
+import accountmanager.supporttool.annotation.SwitchDataSource;
 import accountmanager.supporttool.dto.AccountStateDTO;
 import accountmanager.supporttool.model.amstate.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class AccountStateRepository {
 
     //------------------------------------------- NO User Record Case Handling ------------------------
     //TODO : this operation must be atomic - executed in a transaction ... handle exception
+    @SwitchDataSource(value = "ZLMESE")
     public void fixStudentWithNoUserRecord(String officialEmail){
         List<StudentWithNoUserRecordInfo> studentWithNoUserRecordInfoList = studentWithNoUserRecordPrepareInfo(officialEmail);
         executeStudentUserProfileProcedure(studentWithNoUserRecordInfoList.get(0));
@@ -122,14 +124,18 @@ public class AccountStateRepository {
     }
 
     //------------------------------------------- SSO --------------------------------------------------------
-    public void fixUserSSORecord(String officialEmail) {
-        List<UserSSOSPCallInfo> userSSOSPCallInfoList = prepareSSOSPCallFromSIS(officialEmail);
-    }
+//    public void fixUserSSORecord(String officialEmail) {
+//        List<UserSSOSPCallInfo> userSSOSPCallInfoList = prepareSSOSPInfoFromSIS(officialEmail);
+//        String command = prepareSSOSPCallCommand(userSSOSPCallInfoList);
+//        int result = executeSSOSPCallCommand(command);
+//        System.out.println(result);
+//    }
 
-    public List<UserSSOSPCallInfo> prepareSSOSPCallFromSIS(String officialEmail) {
+    @SwitchDataSource(value = "ZLMESE")
+    public List<UserSSOSPCallInfo> prepareSSOSPInfoFromSIS(String officialEmail) {
         String sql = "select \n" +
                 "ph.Value Email, \n" +
-                "isnull(p.IDNumber,''), \n" +
+                "isnull(p.IDNumber,'') IDNumber, \n" +
                 "p.person_Id,\n" +
                 "p.FirstName + ' ' + p.FamilyName SISUserNameAr,\n" +
                 "isnull(p.EnglishFirstName + ' ' + p.EnglishFamilyName,'') SISUserNameEn,\n" +
@@ -137,11 +143,32 @@ public class AccountStateRepository {
                 "from COMM_Phone ph \n" +
                 "join COMM_Person p on p.PhoneList_Id = ph.PhoneList_Id and contactType in (10)\n" +
                 "join SYS_User u on p.User_Id = u.User_Id\n" +
-                "where Ph.Value = '"+officialEmail+"'";
+                "where ph.Value = '"+officialEmail+"'";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(UserSSOSPCallInfo.class));
 
     }
+
+    //TODO : REFACTOR USER ROLE TO BE DYNAMICALLY DETECTED (not hardcoded)
+    public String prepareSSOSPCallCommand(List<UserSSOSPCallInfo> userSSOSPCallInfoList){
+        UserSSOSPCallInfo userSSOSPCallInfo = userSSOSPCallInfoList.get(0);
+        String ssoStoredProcedureCall = "EXEC [SIS].[dbo].[SP_SyncAccountDetails] \n" +
+                "N'" + userSSOSPCallInfo.getEmail() + "',\n" +
+                "N'" + userSSOSPCallInfo.getIDNumber() + "', \n" +
+                "N'SST11Pers" + userSSOSPCallInfo.getPerson_Id() + "@ese.gov.ae', \n" +
+                "N'SST-1-1-Pers-" + userSSOSPCallInfo.getPerson_Id() + "@ese.gov.ae', \n" +
+                "N'" + userSSOSPCallInfo.getSISID() + "',\n" +
+                "N'" + userSSOSPCallInfo.getSISUserNameEn() + "', \n" +
+                "N'" + userSSOSPCallInfo.getSISUserNameAr() + "', \n" +
+                "N'[ \"STUDENT\" ]'";
+        return ssoStoredProcedureCall;
+    }
+
+    @SwitchDataSource(value = "SIS")
+    public int executeSSOSPCallCommand(String command){
+        return jdbcTemplate.update(command);
+    }
     //------------------------------------------ Trigger AM --------------------------------------------
+    @SwitchDataSource(value = "ZLMESE")
     public void fixAccountManagerStudentState(AccountStateDTO accountStateDTO){
         //delete am state if needed
         if(accountStateDTO.isHasStateRecord()){
@@ -155,10 +182,9 @@ public class AccountStateRepository {
         }
     }
 
-    public int deleteUserAccountState(String officialEmail) {
-        String sql = "elete PRJ_AccountManagerState WHERE AccountID = '"+officialEmail+"';";
-        int rowsAffected = jdbcTemplate.update(sql);
-        return rowsAffected;
+    public void deleteUserAccountState(String officialEmail) {
+        String sql = "delete PRJ_AccountManagerState WHERE AccountID = '"+officialEmail+"';";
+        jdbcTemplate.update(sql);
     }
 
     public List<AMTriggerSPCallInfo> prepareAMTriggerSPCall(String studentNumber) {
@@ -196,6 +222,5 @@ public class AccountStateRepository {
         // Execute the stored procedure
         Map<String, Object> result = simpleJdbcCall.execute(inParams);
     }
-
 
 }

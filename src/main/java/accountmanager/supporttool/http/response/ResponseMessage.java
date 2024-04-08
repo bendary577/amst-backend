@@ -9,6 +9,9 @@ public class ResponseMessage implements Serializable {
 
     public ResponseMessage(){}
 
+    public ResponseMessage(String message){
+        this.message = message;
+    }
     public String getMessage() {
         return message;
     }

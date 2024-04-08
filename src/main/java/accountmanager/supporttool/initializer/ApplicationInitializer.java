@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 /**
  * @author mohamed.bendary
- * this class is used to initialize the application configured user roles and super admin user in database
+ * this class is used to initialize the application's configured user roles and super admin user in database
  * this configured roles will be then loaded in several components in the app to be used
  */
 @Component

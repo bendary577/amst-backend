@@ -2,16 +2,11 @@ package accountmanager.supporttool.controller;
 
 import accountmanager.supporttool.http.response.ResponseMessage;
 import accountmanager.supporttool.dto.AccountStateDashboardDTO;
-import accountmanager.supporttool.model.amstate.StudentUserUID;
-import accountmanager.supporttool.service.AccountStateDashboardService;
 import accountmanager.supporttool.util.AsyncDBServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @CrossOrigin
 @RestController
