@@ -82,7 +82,7 @@ public class AccountStateDashboardRepository {
         return new HashSet<>(studentUserUIDList);
     }
 
-    public HashSet<StudentUserUID> getStudentsUserUIDfromSSODB() {
+    public HashSet<StudentUserUID> getStudentsUserUIDFromSSODB() {
         String sql = "select\n" +
                 "distinct\n" +
                 "sisuserUID\n" +

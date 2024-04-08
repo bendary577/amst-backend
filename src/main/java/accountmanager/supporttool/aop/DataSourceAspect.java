@@ -33,7 +33,7 @@ public class DataSourceAspect {
         MethodSignature sign =  (MethodSignature)joinPoint.getSignature();
         Method method = sign.getMethod();
         SwitchDataSource annotation = method.getAnnotation(SwitchDataSource.class);
-        if(annotation != null){
+        if(annotation != null && !AbstractRoutingDataSourceImpl.getDatabaseName().equalsIgnoreCase(annotation.value())){
             AbstractRoutingDataSourceImpl.setDatabaseName(annotation.value());
             logger.info("Switch DataSource to [{}] in Method [{}]",
                     annotation.value(), joinPoint.getSignature());

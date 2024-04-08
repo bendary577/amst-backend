@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Set;
 
@@ -59,7 +58,7 @@ public class AccountStateController {
             this.accountStateService.fixAccountState(accountStateDTO);
         }
         ResponseMessage responseMessage = new ResponseMessage();
-        responseMessage.setMessage("processing emails file fixing operaion is done");
+        responseMessage.setMessage("processing emails file fixing operation is done");
         responseMessage.setData("");
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }

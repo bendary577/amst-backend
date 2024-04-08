@@ -16,7 +16,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,7 +27,7 @@ import java.util.Set;
 @Service
 public class AccountStateService {
 
-    private AccountStateRepository accountStateRepository;
+    private final AccountStateRepository accountStateRepository;
 
     @Autowired
     public AccountStateService(AccountStateRepository accountStateRepository) {
@@ -108,7 +107,7 @@ public class AccountStateService {
         }
         if(!accountStateDTO.isHasUserRecord()){ //fix user script
             troubleShootingRCA.add("- the user account is not linked to a SYS_User record in SIS DB. this will cause a login failure in AL-Manhal and Student Portal Apps\n");
-            this.accountStateRepository.fixStudentWithNoUserRecord(accountStateDTO.getValue());
+            fixUserRecord(accountStateDTO.getAccountID());
             accountStateDTO.setHasUserRecord(true);
         }
         //------------------------- async fix handling -------------------------
@@ -151,6 +150,14 @@ public class AccountStateService {
             }
         }
         return emailsList;
+    }
+
+    public void fixUserRecord(String officialEmail){
+        this.accountStateRepository.fixStudentWithNoUserRecord(officialEmail);
+    }
+
+    public void fixUserRecord(StudentWithNoUserRecordInfo studentWithNoUserRecordInfo){
+        this.accountStateRepository.fixStudentWithNoUserRecord(studentWithNoUserRecordInfo);
     }
 
 }

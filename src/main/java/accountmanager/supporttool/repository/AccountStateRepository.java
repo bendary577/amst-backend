@@ -51,6 +51,12 @@ public class AccountStateRepository {
         executeResourceGroupAssignProcedure(studentWithNoUserRecordInfoList.get(0));
     }
 
+    @SwitchDataSource(value = "ZLMESE")
+    public void fixStudentWithNoUserRecord(StudentWithNoUserRecordInfo studentWithNoUserRecordInfo){
+        executeStudentUserProfileProcedure(studentWithNoUserRecordInfo);
+        executeResourceGroupAssignProcedure(studentWithNoUserRecordInfo);
+    }
+
     //TODO : MAKE ACADEMIC YEAR - education type CONFIGURABLE
     public List<StudentWithNoUserRecordInfo> studentWithNoUserRecordPrepareInfo(String officialEmail){
         String sql = "select \n" +
@@ -124,13 +130,6 @@ public class AccountStateRepository {
     }
 
     //------------------------------------------- SSO --------------------------------------------------------
-//    public void fixUserSSORecord(String officialEmail) {
-//        List<UserSSOSPCallInfo> userSSOSPCallInfoList = prepareSSOSPInfoFromSIS(officialEmail);
-//        String command = prepareSSOSPCallCommand(userSSOSPCallInfoList);
-//        int result = executeSSOSPCallCommand(command);
-//        System.out.println(result);
-//    }
-
     @SwitchDataSource(value = "ZLMESE")
     public List<UserSSOSPCallInfo> prepareSSOSPInfoFromSIS(String officialEmail) {
         String sql = "select \n" +

@@ -32,7 +32,7 @@ public class AccountStateDashboardService {
     @Async
     @SwitchDataSource(value = "SIS")
     public CompletableFuture<HashSet<StudentUserUID>> getSSODashboardData() {
-        HashSet<StudentUserUID> studentUserUIDList = this.accountStateDashboardRepository.getStudentsUserUIDfromSSODB();
+        HashSet<StudentUserUID> studentUserUIDList = this.accountStateDashboardRepository.getStudentsUserUIDFromSSODB();
         return CompletableFuture.completedFuture(studentUserUIDList);
     }
 
