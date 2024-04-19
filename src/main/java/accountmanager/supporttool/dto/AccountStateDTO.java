@@ -173,4 +173,6 @@ public class AccountStateDTO {
     public void setStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
     }
+
+
 }

@@ -11,9 +11,9 @@ public interface UserMapper {
 
     AppUserDTO entityToDTO(AppUser user);
 
-    List<AppUserDTO> entityToDTO(Iterable<AppUser> project);
+    List<AppUserDTO> entityToDTO(Iterable<AppUser> user);
 
-    AppUser dtoToEntity(AppUserDTO project);
+    AppUser dtoToEntity(AppUserDTO userDto);
 
-    List<AppUser> dtoToEntity(Iterable<AppUserDTO> projects);
+    List<AppUser> dtoToEntity(Iterable<AppUserDTO> userDTOS);
 }

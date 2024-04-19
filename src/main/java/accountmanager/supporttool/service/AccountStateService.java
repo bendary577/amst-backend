@@ -2,11 +2,8 @@ package accountmanager.supporttool.service;
 
 import accountmanager.supporttool.annotation.SwitchDataSource;
 import accountmanager.supporttool.enumeration.SISUserRole;
-import accountmanager.supporttool.enumeration.UserRole;
-import accountmanager.supporttool.model.amstate.AccountState;
+import accountmanager.supporttool.model.amstate.*;
 import accountmanager.supporttool.dto.AccountStateDTO;
-import accountmanager.supporttool.model.amstate.StudentWithNoUserRecordInfo;
-import accountmanager.supporttool.model.amstate.UserSSOSPCallInfo;
 import accountmanager.supporttool.repository.AccountStateRepository;
 import accountmanager.supporttool.util.CSVFileUtil;
 import accountmanager.supporttool.util.OfficialEmailUtil;
@@ -35,13 +32,13 @@ public class AccountStateService {
     }
 
     @SwitchDataSource(value = "ZLMESE")
-    public List<AccountState> getSISData(String officialEmail) {
+    public List<AccountState> getAccountSISData(String officialEmail) {
         List<AccountState> accountStates = accountStateRepository.getAllSISData(officialEmail);
         return accountStates;
     }
 
     @SwitchDataSource(value = "SIS")
-    public List<AccountState> getSSOData(String officialEmail) {
+    public List<AccountState> getAccountSSOData(String officialEmail) {
         List<AccountState> accountStates = accountStateRepository.getAllSSOData(officialEmail);
         return accountStates;
     }
@@ -51,29 +48,30 @@ public class AccountStateService {
         boolean checkExternalIDMatch = false;
 
         if(sisAccountStates != null && !sisAccountStates.isEmpty()){
-            accountStateDTO.setValue(sisAccountStates.get(0).getValue());
-            accountStateDTO.setAccountID(sisAccountStates.get(0).getAccountID());
-            accountStateDTO.setExternalId(sisAccountStates.get(0).getExternalId());
-            accountStateDTO.setLastLoginDate(sisAccountStates.get(0).getLastLoginDate());
-            accountStateDTO.setStaffNumber(sisAccountStates.get(0).getStaffNumber());
-            accountStateDTO.setStudentNumber(sisAccountStates.get(0).getStudentNumber());
-            int gender = sisAccountStates.get(0).getGender();
+            AccountState accountState = sisAccountStates.get(0); //get the needed user account state object (first one)
+            accountStateDTO.setValue(accountState.getValue());
+            accountStateDTO.setAccountID(accountState.getAccountID());
+            accountStateDTO.setExternalId(accountState.getExternalId());
+            accountStateDTO.setLastLoginDate(accountState.getLastLoginDate());
+            accountStateDTO.setStaffNumber(accountState.getStaffNumber());
+            accountStateDTO.setStudentNumber(accountState.getStudentNumber());
+            int gender = accountState.getGender();
             accountStateDTO.setGender(gender);
-            accountStateDTO.setHasUserRecord(sisAccountStates.get(0).getUserName() != null && !sisAccountStates.get(0).getUserName().isEmpty()); //TODO:CHANGE
-            accountStateDTO.setHasOfficialEmailsMatch(sisAccountStates.get(0).getValue() != null && !sisAccountStates.get(0).getValue().isEmpty());
-            if(sisAccountStates.get(0).getAccountManagerState_Id() != 0){
+            accountStateDTO.setHasUserRecord(accountState.getUserName() != null && !accountState.getUserName().isEmpty()); //TODO:CHANGE
+            accountStateDTO.setHasOfficialEmailsMatch(accountState.getValue() != null && !accountState.getValue().isEmpty());
+            if(accountState.getAccountManagerState_Id() != 0){
                 accountStateDTO.setHasStateRecord(true);
             }
 
             //user role
-            int role = sisAccountStates.get(0).getStaff_id() == null ? 1: 2;
+            int role = accountState.getStaff_id() == null ? 1: 2;
             accountStateDTO.setRole(SISUserRole.valueOfRole(role));
 
             if(role == 1){ //Student
                 //does gender and official email match
                 List<String> officialEmails = new LinkedList<>();
-                officialEmails.add(sisAccountStates.get(0).getValue());
-                officialEmails.add(sisAccountStates.get(0).getAccountID());
+                officialEmails.add(accountState.getValue());
+                officialEmails.add(accountState.getAccountID());
                 accountStateDTO.setOfficialEmailMatchGender(OfficialEmailUtil.doOfficialEmailsMatchWithGender(gender, officialEmails));
             }else{ //no need to check gender email format
                 accountStateDTO.setOfficialEmailMatchGender(true);
@@ -82,12 +80,13 @@ public class AccountStateService {
             checkExternalIDMatch = true;
         }
         if(ssoAccountStates != null && !ssoAccountStates.isEmpty()){
-            accountStateDTO.setSISUserEmail(ssoAccountStates.get(0).getSISUserEmail());
-            accountStateDTO.setSISUnifiedUID(ssoAccountStates.get(0).getSISUnifiedUID());
-            accountStateDTO.setHasSSORecord(ssoAccountStates.get(0).getSISUserEmail() != null);
+            AccountState accountState = ssoAccountStates.get(0);
+            accountStateDTO.setSISUserEmail(accountState.getSISUserEmail());
+            accountStateDTO.setSISUnifiedUID(accountState.getSISUnifiedUID());
+            accountStateDTO.setHasSSORecord(accountState.getSISUserEmail() != null);
 
             if(checkExternalIDMatch){
-                accountStateDTO.setHasExternalIdsMatch(sisAccountStates.get(0).getExternalId().equalsIgnoreCase(ssoAccountStates.get(0).getSISUnifiedUID()));
+                accountStateDTO.setHasExternalIdsMatch(sisAccountStates.get(0).getExternalId().equalsIgnoreCase(accountState.getSISUnifiedUID()));
             }
         }
         return accountStateDTO;
@@ -120,7 +119,7 @@ public class AccountStateService {
         if(!accountStateDTO.isHasOfficialEmailsMatch()
             || !accountStateDTO.isOfficialEmailMatchGender()){//trigger AM script
             accountStateDTO.setAsyncfix(true);
-            this.accountStateRepository.fixAccountManagerStudentState(accountStateDTO);
+            triggerAMStoredProcedure(accountStateDTO);
         }
         accountStateDTO.setTroubleshootingRCA(troubleShootingRCA);
         return accountStateDTO;
@@ -152,12 +151,51 @@ public class AccountStateService {
         return emailsList;
     }
 
+    @SwitchDataSource(value = "ZLMESE")
+    public void triggerAMStoredProcedure(AccountStateDTO accountStateDTO){
+        //delete AM state if exists
+        if(accountStateDTO.isHasStateRecord()){
+            this.accountStateRepository.deleteUserAccountState(accountStateDTO.getValue());
+        }
+        //call the SP
+        List<AMTriggerSPCallInfo> amTriggerSPCallInfoList = this.accountStateRepository.prepareAMTriggerSPCall(accountStateDTO.getStudentNumber());
+        int enrollmentId = amTriggerSPCallInfoList.get(0).getEnrollment_Id();
+        if(enrollmentId != 0){
+            this.accountStateRepository.executeAMTriggerProcedure(enrollmentId);
+        }
+    }
+
+    @SwitchDataSource(value = "ZLMESE")
+    public void triggerAMStoredProcedure(AccountStateDTO accountStateDTO, int enrollmentId){
+        //delete AM state if exists
+        if(accountStateDTO.isHasStateRecord()){
+            this.accountStateRepository.deleteUserAccountState(accountStateDTO.getValue());
+        }
+        this.accountStateRepository.executeAMTriggerProcedure(enrollmentId);
+    }
+
     public void fixUserRecord(String officialEmail){
         this.accountStateRepository.fixStudentWithNoUserRecord(officialEmail);
     }
 
     public void fixUserRecord(StudentWithNoUserRecordInfo studentWithNoUserRecordInfo){
         this.accountStateRepository.fixStudentWithNoUserRecord(studentWithNoUserRecordInfo);
+    }
+
+    public void fixUserProfileRecord(SISUserRecord sisUserRecord){
+        this.accountStateRepository.fixUserProfileRecord(sisUserRecord);
+    }
+
+    public void fixDisabledUser(SISUserRecord sisUserRecord){
+        this.accountStateRepository.enableDisabledUser(sisUserRecord);
+    }
+
+    public AccountStateDTO getAccountStateDTOFromEnrollmentInfo(AMTriggerSPCallInfo amTriggerSPCallInfo){
+        AccountStateDTO accountStateDTO = new AccountStateDTO();
+        if(amTriggerSPCallInfo.getAccountManagerState_Id() != null){
+            accountStateDTO.setHasStateRecord(true);
+        }
+        return accountStateDTO;
     }
 
 }

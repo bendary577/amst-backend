@@ -23,4 +23,10 @@ public class OfficialEmailUtil {
         String regex = "[A-Za-z0-9._%+-]+@(ese\\.gov\\.ae|kbza\\.sch\\.ae)$";
         return officialEmail.matches(regex);
     }
+
+    public static boolean isValidInternalEmail(String officialEmail){
+        officialEmail = officialEmail.toLowerCase();
+        String regex = "[A-Za-z0-9._%+-]+@(secondstep\\.ae|itworxedu\\.com)$";
+        return officialEmail.matches(regex);
+    }
 }

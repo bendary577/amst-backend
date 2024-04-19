@@ -18,6 +18,13 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Column(name = "name")
+    @NotBlank(message = "name is mandatory")
+    @Size(max = 50)
+    @Email
+    private String name;
+
     @Column(name = "email")
     @NotBlank(message = "email is mandatory")
     @Size(max = 50)
@@ -79,5 +86,13 @@ public class AppUser {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

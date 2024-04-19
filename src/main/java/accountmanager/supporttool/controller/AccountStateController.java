@@ -26,8 +26,8 @@ public class AccountStateController {
 
     @GetMapping("/{officialEmail}/getState")
     public ResponseEntity<ResponseMessage> getAccountState(@PathVariable String officialEmail) {
-        List<AccountState> sisAccountStates = this.accountStateService.getSISData(officialEmail);
-        List<AccountState> ssoAccountStates = this.accountStateService.getSSOData(officialEmail);
+        List<AccountState> sisAccountStates = this.accountStateService.getAccountSISData(officialEmail);
+        List<AccountState> ssoAccountStates = this.accountStateService.getAccountSSOData(officialEmail);
         AccountStateDTO accountStateDTO = this.accountStateService.buildAccountStateDTO(sisAccountStates, ssoAccountStates);
         ResponseMessage responseMessage = new ResponseMessage();
         responseMessage.setMessage("account state returned successfully");
@@ -37,8 +37,8 @@ public class AccountStateController {
 
     @GetMapping("/{officialEmail}/fixState")
     public ResponseEntity<ResponseMessage> fixAccountState(@PathVariable String officialEmail) {
-        List<AccountState> sisAccountStates = this.accountStateService.getSISData(officialEmail);
-        List<AccountState> ssoAccountStates = this.accountStateService.getSSOData(officialEmail);
+        List<AccountState> sisAccountStates = this.accountStateService.getAccountSISData(officialEmail);
+        List<AccountState> ssoAccountStates = this.accountStateService.getAccountSSOData(officialEmail);
         AccountStateDTO accountStateDTO = this.accountStateService.buildAccountStateDTO(sisAccountStates, ssoAccountStates);
         accountStateDTO =  this.accountStateService.fixAccountState(accountStateDTO);
         ResponseMessage responseMessage = new ResponseMessage();
@@ -52,8 +52,8 @@ public class AccountStateController {
     public ResponseEntity<ResponseMessage> fixAccountStateFromCSV(@RequestParam("file") MultipartFile file) {
         Set<String> emails = this.accountStateService.parseAccountsCSVFile(file);
         for(String officialEmail : emails){
-            List<AccountState> sisAccountStates = this.accountStateService.getSISData(officialEmail);
-            List<AccountState> ssoAccountStates = this.accountStateService.getSSOData(officialEmail);
+            List<AccountState> sisAccountStates = this.accountStateService.getAccountSISData(officialEmail);
+            List<AccountState> ssoAccountStates = this.accountStateService.getAccountSSOData(officialEmail);
             AccountStateDTO accountStateDTO = this.accountStateService.buildAccountStateDTO(sisAccountStates, ssoAccountStates);
             this.accountStateService.fixAccountState(accountStateDTO);
         }

@@ -1,24 +1,31 @@
 package accountmanager.supporttool.service;
 
+import accountmanager.supporttool.dto.RoleDTO;
 import accountmanager.supporttool.enumeration.UserRole;
+import accountmanager.supporttool.mapper.RoleMapper;
+import accountmanager.supporttool.mapper.UserMapper;
 import accountmanager.supporttool.model.app.Role;
 import accountmanager.supporttool.repository.RoleRepository;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class RoleService {
 
-   private RoleRepository roleRepository;
+   private final RoleRepository roleRepository;
+   private RoleMapper roleMapper;
 
     @Autowired
     public RoleService(RoleRepository roleRepository){
         this.roleRepository = roleRepository;
+        this.roleMapper = Mappers.getMapper(RoleMapper.class);
     }
 
     public Role findByName(UserRole roleName){
@@ -69,6 +76,10 @@ public class RoleService {
         Role role = new Role();
         role.setName(UserRole.SUPER_ADMIN);
         Role role1 = this.roleRepository.save(role);
+    }
+
+    public List<RoleDTO> getAllRoles(){
+        return this.roleMapper.entityToDTO(this.roleRepository.findAll());
     }
 
 }

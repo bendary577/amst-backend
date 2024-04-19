@@ -1,19 +1,11 @@
 package accountmanager.supporttool.repository;
 
-import accountmanager.supporttool.annotation.SwitchDataSource;
-import accountmanager.supporttool.dto.AccountStateDTO;
 import accountmanager.supporttool.model.amstate.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
-
-import java.sql.Types;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class AccountStateHealthCheckRepository {
