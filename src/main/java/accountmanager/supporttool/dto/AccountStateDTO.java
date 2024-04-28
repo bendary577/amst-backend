@@ -1,20 +1,16 @@
 package accountmanager.supporttool.dto;
 
-
 import accountmanager.supporttool.enumeration.SISUserRole;
-import accountmanager.supporttool.enumeration.UserRole;
 import java.util.List;
 
 public class AccountStateDTO {
-
-    private String value;
-    private String AccountID;
+    private String officialEmailInCommPhone;
+    private String officialEmailInAMState;
     private String externalId;
-    private String SISUserEmail;
+    private String officialEmailInSSO;
     private String SISUnifiedUID;
     private String LastLoginDate;
     private int gender;
-
     private String staffNumber;
     private String studentNumber;
     private SISUserRole role;
@@ -27,30 +23,6 @@ public class AccountStateDTO {
     private boolean isAsyncfix;
     private boolean hasStateRecord;
     public AccountStateDTO(){}
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getAccountID() {
-        return AccountID;
-    }
-
-    public void setAccountID(String accountID) {
-        AccountID = accountID;
-    }
-
-    public String getSISUserEmail() {
-        return SISUserEmail;
-    }
-
-    public void setSISUserEmail(String SISUserEmail) {
-        this.SISUserEmail = SISUserEmail;
-    }
 
     public boolean isHasUserRecord() {
         return hasUserRecord;
@@ -174,5 +146,27 @@ public class AccountStateDTO {
         this.studentNumber = studentNumber;
     }
 
+    public String getOfficialEmailInCommPhone() {
+        return officialEmailInCommPhone;
+    }
 
+    public void setOfficialEmailInCommPhone(String officialEmailInCommPhone) {
+        this.officialEmailInCommPhone = officialEmailInCommPhone;
+    }
+
+    public String getOfficialEmailInAMState() {
+        return officialEmailInAMState;
+    }
+
+    public void setOfficialEmailInAMState(String officialEmailInAMState) {
+        this.officialEmailInAMState = officialEmailInAMState;
+    }
+
+    public String getOfficialEmailInSSO() {
+        return officialEmailInSSO;
+    }
+
+    public void setOfficialEmailInSSO(String officialEmailInSSO) {
+        this.officialEmailInSSO = officialEmailInSSO;
+    }
 }

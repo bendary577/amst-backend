@@ -7,10 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SupportToolApplication {
 
 	public static void main(String[] args) {
-//		SpringApplication.run(SupportToolApplication.class, args);
-		SpringApplication application = new SpringApplication(SupportToolApplication.class);
-		application.setAdditionalProfiles("prod");
-		application.run(args);
+		SpringApplication.run(SupportToolApplication.class, args);
+//		SpringApplication application = new SpringApplication(SupportToolApplication.class);
+//		application.setAdditionalProfiles("prod");
+//		application.run(args);
 	}
 
 }

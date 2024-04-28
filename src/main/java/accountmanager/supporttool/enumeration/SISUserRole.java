@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum SISUserRole {
-    STUDE(1),
+    STUDENT(1),
     STAFF(2),
     ADMIN(3);
 

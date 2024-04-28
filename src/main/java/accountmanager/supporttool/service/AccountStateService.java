@@ -49,8 +49,8 @@ public class AccountStateService {
 
         if(sisAccountStates != null && !sisAccountStates.isEmpty()){
             AccountState accountState = sisAccountStates.get(0); //get the needed user account state object (first one)
-            accountStateDTO.setValue(accountState.getValue());
-            accountStateDTO.setAccountID(accountState.getAccountID());
+            accountStateDTO.setOfficialEmailInCommPhone(accountState.getValue());
+            accountStateDTO.setOfficialEmailInAMState(accountState.getAccountID());
             accountStateDTO.setExternalId(accountState.getExternalId());
             accountStateDTO.setLastLoginDate(accountState.getLastLoginDate());
             accountStateDTO.setStaffNumber(accountState.getStaffNumber());
@@ -81,7 +81,7 @@ public class AccountStateService {
         }
         if(ssoAccountStates != null && !ssoAccountStates.isEmpty()){
             AccountState accountState = ssoAccountStates.get(0);
-            accountStateDTO.setSISUserEmail(accountState.getSISUserEmail());
+            accountStateDTO.setOfficialEmailInSSO(accountState.getSISUserEmail());
             accountStateDTO.setSISUnifiedUID(accountState.getSISUnifiedUID());
             accountStateDTO.setHasSSORecord(accountState.getSISUserEmail() != null);
 
@@ -97,16 +97,16 @@ public class AccountStateService {
         int isUserSSORecordFixed = 1; //false
         if(!accountStateDTO.isHasExternalIdsMatch()){//sso sp script
             troubleShootingRCA.add("the user externalId in SIS DB doesn't match the corresponding value in SSO DB. this will cause a login failure in AL-Manhal\n");
-            isUserSSORecordFixed = fixUserSSORecord(accountStateDTO.getValue());
+            isUserSSORecordFixed = fixUserSSORecord(accountStateDTO.getOfficialEmailInCommPhone());
         }
         if(isUserSSORecordFixed == 1 && !accountStateDTO.isHasSSORecord()){//sso sp script : call in case it was not called in the upper checking
             troubleShootingRCA.add("the user account doesn't have an SSO record in the intermediate SSO DB. ths will cause login failure in all ecosystem apps\n");
-            fixUserSSORecord(accountStateDTO.getValue());
+            fixUserSSORecord(accountStateDTO.getOfficialEmailInCommPhone());
             accountStateDTO.setHasSSORecord(true);
         }
         if(!accountStateDTO.isHasUserRecord()){ //fix user script
             troubleShootingRCA.add("- the user account is not linked to a SYS_User record in SIS DB. this will cause a login failure in AL-Manhal and Student Portal Apps\n");
-            fixUserRecord(accountStateDTO.getAccountID());
+            fixUserRecord(accountStateDTO.getOfficialEmailInAMState());
             accountStateDTO.setHasUserRecord(true);
         }
         //------------------------- async fix handling -------------------------
@@ -155,7 +155,7 @@ public class AccountStateService {
     public void triggerAMStoredProcedure(AccountStateDTO accountStateDTO){
         //delete AM state if exists
         if(accountStateDTO.isHasStateRecord()){
-            this.accountStateRepository.deleteUserAccountState(accountStateDTO.getValue());
+            this.accountStateRepository.deleteUserAccountState(accountStateDTO.getOfficialEmailInCommPhone());
         }
         //call the SP
         List<AMTriggerSPCallInfo> amTriggerSPCallInfoList = this.accountStateRepository.prepareAMTriggerSPCall(accountStateDTO.getStudentNumber());
@@ -169,7 +169,7 @@ public class AccountStateService {
     public void triggerAMStoredProcedure(AccountStateDTO accountStateDTO, int enrollmentId){
         //delete AM state if exists
         if(accountStateDTO.isHasStateRecord()){
-            this.accountStateRepository.deleteUserAccountState(accountStateDTO.getValue());
+            this.accountStateRepository.deleteUserAccountState(accountStateDTO.getOfficialEmailInCommPhone());
         }
         this.accountStateRepository.executeAMTriggerProcedure(enrollmentId);
     }
